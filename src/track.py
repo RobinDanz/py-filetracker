@@ -10,6 +10,7 @@ load_dotenv()
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
+SHEET_NAME = os.getenv('SHEET_NAME')
 
 FILENAME_REGEX = r'(?P<batch>[\da-zA-Z-_]*)_(?P<position>r\d{1,2}c\d{1,2}).(?P<ext>jpg|png)'
 
@@ -53,7 +54,7 @@ def build_service():
     """
     Build and return Google API service
     """
-    account_path = os.path.join(Path(__file__).parent, 'service_account.json')
+    account_path = os.path.join(Path(__file__).parent.parent, 'account', 'service_account.json')
     creds = service_account.Credentials.from_service_account_file(account_path, scopes=SCOPES)
 
     service = build("sheets", "v4", credentials=creds)
@@ -145,7 +146,7 @@ def build_remote_list(service):
     result = (
         service.spreadsheets()
         .values()
-        .get(spreadsheetId=SPREADSHEET_ID, range='tracking!A2:E')
+        .get(spreadsheetId=SPREADSHEET_ID, range=f'{SHEET_NAME}!A2:E')
         .execute()
     )
     rows = result.get("values", [])
@@ -197,7 +198,7 @@ def insert_files(service, values):
         .values()
         .append(
             spreadsheetId=SPREADSHEET_ID,
-            range='tracking!A2:E',
+            range=f'{SHEET_NAME}!A2:E',
             valueInputOption="USER_ENTERED",
             body=body
         )
@@ -213,7 +214,7 @@ def update_files(service, values):
     for f in values:
         data.append(
             {
-                'range': f'tracking!A{f.index}:E{f.index}',
+                'range': f'{SHEET_NAME}!A{f.index}:E{f.index}',
                 'values': [f.to_list()]
             }
         )
