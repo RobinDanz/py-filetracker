@@ -81,4 +81,4 @@ After setting up a Google API service account, follow the next steps
 7. Execute the tool: `python src/track.py`
 
 ## Run the script as a periodical services
-Instead of running the script manually it is possible to configure it as a periodic service. To do so, use something such as crontab to periodically execute the script.
+Instead of running the script manually it is possible to configure it as a periodic service. To do so, use something such as cron to periodically execute the script.
